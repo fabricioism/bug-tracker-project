@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@/components/atoms/*": ["components/atoms/*"],
+            "@/components/molecules/*": ["components/molecules/*"],
+            "@/components/organisms/*": ["components/organisms/*"],
+            "@/components/views/*":["components/views/*"],
+        }
+    }
+}
