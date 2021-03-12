@@ -12,6 +12,7 @@
     "@emotion/react": "^11.1.5",
     "@emotion/styled": "^11.1.5",
     "autoprefixer": "^10.2.5",
+    "datejs": "^1.0.0-rc3",
     "formik": "^2.2.6",
     "framer-motion": "^3.10.2",
     "next": "10.0.8",
