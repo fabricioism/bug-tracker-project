@@ -1,9 +1,11 @@
 import Link from "next/link";
+import { Box, Skeleton } from "@chakra-ui/react";
+
 const Footer = () => {
+  /**  grid-row-start: 2;
+  grid-row-end: 3; */
   return (
-    <footer
-      className="text-gray-600 body-font"
-    >
+    <footer className="text-gray-600 body-font" style={{ flexShrink: 0 }}>
       <div className="container px-5 py-8 mx-auto flex items-center sm:flex-row flex-col">
         <Link href="/">
           <a className="flex title-font font-medium items-center md:justify-start justify-center text-gray-900">

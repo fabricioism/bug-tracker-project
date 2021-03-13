@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-
+import { useRouter } from "next/router";
 import useSWR from "swr";
 import { Auth, Card, Typography, Space, Button, Icon } from "@supabase/ui";
 import { supabase } from "@lib/initSupabase";
 import fetcher from "@utils/fetcher";
 
 const Login = () => {
+  const router = useRouter();
   const { user, session } = Auth.useUser();
   const { data, error } = useSWR(
     session ? ["/api/getUser", session.access_token] : null,
@@ -45,7 +46,7 @@ const Login = () => {
               width="96"
             />
             <Typography.Title level={3}>
-              Welcome to Supabase Auth
+              Bienvenido al mejor sistema de seguimiento de Bugs
             </Typography.Title>
           </div>
           <Auth
