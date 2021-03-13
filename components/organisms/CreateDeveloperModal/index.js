@@ -39,7 +39,7 @@ const CreateDeveloperModal = () => {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent as="form" onSubmit={handleSubmit(onCreateDeveloper)}>
-          <ModalHeader>Crear proyecto</ModalHeader>
+          <ModalHeader>Agregar nuevo desarrollador</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <Stack spacing="6">
