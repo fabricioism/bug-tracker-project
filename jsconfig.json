@@ -6,6 +6,8 @@
             "@/components/molecules/*": ["components/molecules/*"],
             "@/components/organisms/*": ["components/organisms/*"],
             "@/components/views/*":["components/views/*"],
+            "@lib/*":["lib/*"],
+            "@utils/*":["utils/*"]
         }
     }
 }
