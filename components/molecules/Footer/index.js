@@ -3,7 +3,6 @@ const Footer = () => {
   return (
     <footer
       className="text-gray-600 body-font"
-      style={{ position: "fixed", bottom: 0, width: "100%" }}
     >
       <div className="container px-5 py-8 mx-auto flex items-center sm:flex-row flex-col">
         <Link href="/">
