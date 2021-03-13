@@ -7,7 +7,8 @@
             "@/components/organisms/*": ["components/organisms/*"],
             "@/components/views/*":["components/views/*"],
             "@lib/*":["lib/*"],
-            "@utils/*":["utils/*"]
+            "@utils/*":["utils/*"],
+            "@/components/routing/*":["components/routing/*"]
         }
     }
 }

@@ -4,6 +4,7 @@ import useSWR from "swr";
 import { Auth, Card, Typography, Space, Button, Icon } from "@supabase/ui";
 import { supabase } from "@lib/initSupabase";
 import fetcher from "@utils/fetcher";
+import { PublicRoute } from "@/components/routing/PublicRoute";
 
 const Login = () => {
   const router = useRouter();
@@ -105,11 +106,13 @@ const Login = () => {
   };
 
   return (
-    <div style={{ maxWidth: "420px", margin: "96px auto" }}>
-      <Card>
-        <View />
-      </Card>
-    </div>
+    <PublicRoute>
+      <div style={{ maxWidth: "420px", margin: "96px auto" }}>
+        <Card>
+          <View />
+        </Card>
+      </div>
+    </PublicRoute>
   );
 };
 

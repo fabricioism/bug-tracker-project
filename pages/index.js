@@ -1,12 +1,8 @@
-import Head from "next/head";
-import Link from "next/link";
-import styles from "../styles/Home.module.css";
-import { Card, Typography, Space } from "@supabase/ui";
-import { supabase } from "@lib/initSupabase";
+import { PrivateRoute } from "@/components/routing/PrivateRoute";
 
 export default function Home() {
   return (
-    <>
+    <PrivateRoute>
       <div class="flex flex-wrap w-full mb-10 flex-col items-center text-center">
         <h1 class="sm:text-3xl text-2xl font-medium title-font mb-2 text-gray-900">
           ¡El mejor servicio de gestión de bugs!
@@ -165,6 +161,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-    </>
+    </PrivateRoute>
   );
 }
