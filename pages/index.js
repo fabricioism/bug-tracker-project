@@ -9,7 +9,7 @@ export default function Home() {
     <>
       <div class="flex flex-wrap w-full mb-10 flex-col items-center text-center">
         <h1 class="sm:text-3xl text-2xl font-medium title-font mb-2 text-gray-900">
-          Pitchfork Kickstarter Taxidermy
+          ¡El mejor servicio de gestión de bugs!
         </h1>
         <p class="lg:w-1/2 w-full leading-relaxed text-gray-500">
           Whatever cardigan tote bag tumblr hexagon brooklyn asymmetrical
