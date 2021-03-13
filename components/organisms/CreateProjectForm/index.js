@@ -1,9 +1,13 @@
+import { useState } from "react";
 import { Button, FormControl, FormLabel, Input, Stack } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 
 const CreateProjectForm = () => {
+  const [selected, setselected] = useState({});
   const { register, handleSubmit } = useForm();
   const onSubmit = (data) => console.log(data);
+
+  console.log("selected", selected);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
