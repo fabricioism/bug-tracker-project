@@ -4,7 +4,11 @@ const Navbar = () => {
   const AdminLinks = () => {
     return (
       <>
-        <Link href="#">
+        <Link href="/bugs">
+          <a className="mr-5 hover:text-gray-900">Bugs</a>
+        </Link>
+
+        <Link href="/developers">
           <a className="mr-5 hover:text-gray-900">Desarrolladores</a>
         </Link>
 
@@ -12,7 +16,7 @@ const Navbar = () => {
           <a className="mr-5 hover:text-gray-900">Estadísticas</a>
         </Link>
 
-        <Link href="#">
+        <Link href="/projects">
           <a className="mr-5 hover:text-gray-900">Proyectos</a>
         </Link>
       </>

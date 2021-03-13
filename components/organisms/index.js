@@ -1,3 +1,3 @@
-export { CreateBugForm } from "./CreateBugForm";
-export { CreateDeveloperForm } from "./CreateDeveloperForm";
-export { CreateProjectForm } from "./CreateProjectForm";
+export { CreateBugModal } from "./CreateBugModal";
+export { CreateDeveloperModal } from "./CreateDeveloperModal";
+export { CreateProjectModal } from "./CreateProjectModal";
