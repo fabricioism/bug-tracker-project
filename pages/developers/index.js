@@ -13,7 +13,6 @@ const Developers = () => {
 
   return (
     <PrivateRoute>
-      {" "}
       <Flex justify="flex-start" margin="5px 10px 20px 10px">
         <Heading size="lg">Desarrolladores</Heading>
       </Flex>

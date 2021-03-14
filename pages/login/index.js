@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
 import useSWR from "swr";
 import { Auth, Card, Typography, Space, Button, Icon } from "@supabase/ui";
 import { supabase } from "@lib/initSupabase";
@@ -7,7 +6,6 @@ import fetcher from "@utils/fetcher";
 import { PublicRoute } from "@/components/routing/PublicRoute";
 
 const Login = () => {
-  const router = useRouter();
   const { user, session } = Auth.useUser();
   const { data, error } = useSWR(
     session ? ["/api/getUser", session.access_token] : null,
@@ -47,12 +45,11 @@ const Login = () => {
               width="96"
             />
             <Typography.Title level={3}>
-              Bienvenido al mejor sistema de seguimiento de Bugs
+              Welcome to Bug Tracker
             </Typography.Title>
           </div>
           <Auth
             supabaseClient={supabase}
-            providers={["google", "github"]}
             view={authView}
             socialLayout="horizontal"
             socialButtonSize="xlarge"

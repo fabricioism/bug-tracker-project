@@ -16,21 +16,50 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import { supabase } from "@lib/initSupabase";
 
 const CreateDeveloperModal = () => {
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { handleSubmit, register } = useForm();
 
-  const onCreateDeveloper = (data) => {
-    console.log("data", data);
-    toast({
-      title: "Éxito!",
-      description: "Haz creado un nuevo desarrollador.",
-      status: "success",
-      duration: 5000,
-      isClosable: true,
-    });
+  const onCreateDeveloper = async (data) => {
+    try {
+      /** Creating the user  */
+      const { error, data: resData } = await supabase.auth.signUp({
+        email: data.email,
+        password: Math.random().toString(36).substring(7),
+      });
+
+      /** Inserting at public user table */
+      await supabase.from("user").insert([
+        {
+          name: data.name,
+          email: data.email,
+          programmingLanguages: data.programmingLanguages,
+          technologies: data.technologies,
+          uid: resData?.id,
+          role: 2,
+        },
+      ]);
+
+      toast({
+        title: "Éxito!",
+        description:
+          "Haz creado un nuevo desarrollador. Dile que revise su bandeja de correo",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: "Error!",
+        description: "Ha ocurrido un error, intentelo de nuevo",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
   };
 
   return (
@@ -74,13 +103,13 @@ const CreateDeveloperModal = () => {
                 />
               </FormControl>
 
-              <FormControl id="languages" isRequired>
+              <FormControl id="programmingLanguages" isRequired>
                 <FormLabel>Lenguajes de programación</FormLabel>
                 <Textarea
                   placeholder="Lenguajes de programación que maneja"
                   ref={register}
-                  id="languages"
-                  name="languages"
+                  id="programmingLanguages"
+                  name="programmingLanguages"
                   resize={"horizontal"}
                   size={"md"}
                 />
