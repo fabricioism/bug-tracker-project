@@ -1,10 +1,13 @@
 import Link from "next/link";
 import { Box, Skeleton } from "@chakra-ui/react";
+import { supabase } from "@lib/initSupabase";
 
 const Footer = () => {
+  const user = supabase.auth.user();
+
   /**  grid-row-start: 2;
   grid-row-end: 3; */
-  return (
+  return user ? (
     <footer className="text-gray-600 body-font" style={{ flexShrink: 0 }}>
       <div className="container px-5 py-8 mx-auto flex items-center sm:flex-row flex-col">
         <Link href="/">
@@ -107,7 +110,7 @@ const Footer = () => {
         </span>
       </div>
     </footer>
-  );
+  ) : null;
 };
 
 export { Footer };

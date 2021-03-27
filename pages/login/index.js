@@ -72,13 +72,7 @@ const Login = () => {
                 <Button>Inicio</Button>
               </a>
             </Link>
-            <Button
-              icon={<Icon type="LogOut" />}
-              type="outline"
-              onClick={() => supabase.auth.signOut()}
-            >
-              Salir
-            </Button>
+            <Button onClick={() => supabase.auth.signOut()}>Salir</Button>
             {error && (
               <Typography.Text danger>Failed to fetch user!</Typography.Text>
             )}
