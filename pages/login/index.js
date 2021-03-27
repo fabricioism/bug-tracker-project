@@ -104,13 +104,11 @@ const Login = () => {
   };
 
   return (
-    <PublicRoute>
-      <div style={{ maxWidth: "420px", margin: "96px auto" }}>
-        <Card>
-          <View />
-        </Card>
-      </div>
-    </PublicRoute>
+    <div style={{ maxWidth: "420px", margin: "96px auto" }}>
+      <Card>
+        <View />
+      </Card>
+    </div>
   );
 };
 
