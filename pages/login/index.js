@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
-import { Auth, Card, Typography, Space, Button, Icon } from "@supabase/ui";
+import { Auth, Card, Typography, Space, Button } from "@supabase/ui";
 import { supabase } from "@lib/initSupabase";
 import fetcher from "@utils/fetcher";
-import { PublicRoute } from "@/components/routing/PublicRoute";
+import { Logo } from "@/constants/logo";
 
 const Login = () => {
   const { user, session } = Auth.useUser();
@@ -39,7 +39,7 @@ const Login = () => {
   const View = () => {
     if (!user)
       return (
-        <Space direction="vertical" size={8}>
+        <Space direction="vertical" size={1}>
           <div>
             <img
               src="https://app.supabase.io/img/supabase-dark.svg"
@@ -65,24 +65,29 @@ const Login = () => {
         )}
         {user && (
           <>
-            <Typography.Text>Ya haz iniciado sesión</Typography.Text>
+            <Link href="/">
+              <a className="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0">
+                <Logo />
+              </a>
+            </Link>
+            <Typography.Text>{`Hey there!  :)`}</Typography.Text>
             <Typography.Text strong>Email: {user.email}</Typography.Text>
             <Link href="/">
               <a>
-                <Button>Inicio</Button>
+                <Button style={{ color: "white" }}>Go home</Button>
               </a>
             </Link>
             <Button type="outline" onClick={() => supabase.auth.signOut()}>
-              Salir
+              Logout
             </Button>
             {error && (
               <Typography.Text danger>Failed to fetch user!</Typography.Text>
             )}
             {data && !error ? (
               <>
-                <Typography.Text type="success">
+                {/* <Typography.Text type="success">
                   User data retrieved server-side (in API route):
-                </Typography.Text>
+                </Typography.Text> */}
 
                 {/* <Typography.Text>
                   <pre>{JSON.stringify(data, null, 2)}</pre>
@@ -91,12 +96,6 @@ const Login = () => {
             ) : (
               <div>Loading...</div>
             )}
-
-            <Typography.Text>
-              <Link href="/">
-                <a>SSR example with getServerSideProps</a>
-              </Link>
-            </Typography.Text>
           </>
         )}
       </Space>
@@ -104,7 +103,7 @@ const Login = () => {
   };
 
   return (
-    <div style={{ maxWidth: "420px", margin: "96px auto" }}>
+    <div style={{ maxWidth: "420px", margin: "80px auto" }}>
       <Card>
         <View />
       </Card>
