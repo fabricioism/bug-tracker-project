@@ -84,9 +84,9 @@ const Login = () => {
                   User data retrieved server-side (in API route):
                 </Typography.Text>
 
-                <Typography.Text>
+                {/* <Typography.Text>
                   <pre>{JSON.stringify(data, null, 2)}</pre>
-                </Typography.Text>
+                </Typography.Text> */}
               </>
             ) : (
               <div>Loading...</div>
