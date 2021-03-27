@@ -1,3 +1,5 @@
+import { supabase } from "@lib/initSupabase";
+
 // Example of how to verify and get user data server-side.
 const getUser = async (req, res) => {
   const token = req.headers.token;

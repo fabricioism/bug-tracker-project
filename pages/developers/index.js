@@ -6,7 +6,7 @@ import { PrivateRoute } from "@/components/routing/PrivateRoute";
 const Developers = () => {
   const headers = [
     "Nombre",
-    "Email",
+    "Correo electrónico",
     "Lenguajes de programación",
     "Tecnologías",
   ];

@@ -16,7 +16,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { supabase } from "@lib/initSupabase";
+// import { supabase } from "@lib/initSupabase";
 
 const CreateDeveloperModal = () => {
   const toast = useToast();
@@ -26,22 +26,7 @@ const CreateDeveloperModal = () => {
   const onCreateDeveloper = async (data) => {
     try {
       /** Creating the user  */
-      const { error, data: resData } = await supabase.auth.signUp({
-        email: data.email,
-        password: Math.random().toString(36).substring(7),
-      });
-
-      /** Inserting at public user table */
-      await supabase.from("user").insert([
-        {
-          name: data.name,
-          email: data.email,
-          programmingLanguages: data.programmingLanguages,
-          technologies: data.technologies,
-          uid: resData?.id,
-          role: 2,
-        },
-      ]);
+      console.log(`data`, data);
 
       toast({
         title: "Éxito!",
@@ -72,23 +57,13 @@ const CreateDeveloperModal = () => {
           <ModalCloseButton />
           <ModalBody pb={6}>
             <Stack spacing="6">
-              <FormControl id="firstName" isRequired>
+              <FormControl id="name" isRequired>
                 <FormLabel>Nombre</FormLabel>
                 <Input
                   placeholder="Ingresa el nombre"
                   ref={register}
-                  id="firstName"
-                  name="firstName"
-                />
-              </FormControl>
-
-              <FormControl id="lastName" isRequired>
-                <FormLabel>Apellido</FormLabel>
-                <Input
-                  placeholder="Ingresa el apellido"
-                  ref={register}
-                  id="lastName"
-                  name="lastName"
+                  id="name"
+                  name="name"
                 />
               </FormControl>
 
