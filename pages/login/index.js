@@ -67,7 +67,7 @@ const Login = () => {
           <>
             <Typography.Text>Ya haz iniciado sesión</Typography.Text>
             <Typography.Text strong>Email: {user.email}</Typography.Text>
-            <Link>
+            <Link href="/">
               <a>
                 <Button>Inicio</Button>
               </a>
