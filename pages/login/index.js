@@ -4,7 +4,6 @@ import useSWR from "swr";
 import { Auth, Card, Typography, Space, Button } from "@supabase/ui";
 import { supabase } from "@lib/initSupabase";
 import fetcher from "@utils/fetcher";
-import { Logo } from "@/constants/logo";
 
 const Login = () => {
   const { user, session } = Auth.useUser();

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   Button,
@@ -12,13 +13,20 @@ import {
   ModalBody,
   ModalCloseButton,
   Stack,
-  Textarea,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-// import { supabase } from "@lib/initSupabase";
+import ReactTagInput from "@pathofdev/react-tag-input";
+import "@pathofdev/react-tag-input/build/index.css";
+
+import { supabase } from "@lib/initSupabase";
 
 const CreateDeveloperModal = () => {
+  const user = supabase.auth.user();
+
+  const [languages, setLanguages] = useState([]);
+  const [technologies, setTechnologies] = useState([]);
+
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { handleSubmit, register } = useForm();
@@ -36,6 +44,8 @@ const CreateDeveloperModal = () => {
         duration: 5000,
         isClosable: true,
       });
+
+      onClose();
     } catch (error) {
       toast({
         title: "Error!",
@@ -44,6 +54,8 @@ const CreateDeveloperModal = () => {
         duration: 5000,
         isClosable: true,
       });
+
+      onClose();
     }
   };
 
@@ -78,27 +90,23 @@ const CreateDeveloperModal = () => {
                 />
               </FormControl>
 
-              <FormControl id="programmingLanguages" isRequired>
+              <FormControl id="programmingLanguages">
                 <FormLabel>Lenguajes de programación</FormLabel>
-                <Textarea
-                  placeholder="Lenguajes de programación que maneja"
-                  ref={register}
-                  id="programmingLanguages"
-                  name="programmingLanguages"
-                  resize={"horizontal"}
-                  size={"md"}
+                <ReactTagInput
+                  removeOnBackspace
+                  tags={languages}
+                  onChange={(newLanguages) => setLanguages(newLanguages)}
                 />
               </FormControl>
 
-              <FormControl id="technologies" isRequired>
+              <FormControl id="technologies">
                 <FormLabel>Tecnologías</FormLabel>
-                <Textarea
-                  placeholder="Tecnologías que maneja"
-                  ref={register}
-                  id="technologies"
-                  name="technologies"
-                  resize={"horizontal"}
-                  size={"md"}
+                <ReactTagInput
+                  removeOnBackspace
+                  tags={technologies}
+                  onChange={(newTechnologies) =>
+                    setTechnologies(newTechnologies)
+                  }
                 />
               </FormControl>
             </Stack>
