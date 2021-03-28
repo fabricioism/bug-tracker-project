@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { mutate } from "swr";
+import { UpdateUser } from "@lib/db";
 import {
   Button,
   FormControl,
@@ -13,45 +15,61 @@ import {
   ModalBody,
   ModalCloseButton,
   Stack,
+  Switch,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
 import ReactTagInput from "@pathofdev/react-tag-input";
 import "@pathofdev/react-tag-input/build/index.css";
 
-import { supabase } from "@lib/initSupabase";
+// import { supabase } from "@lib/initSupabase";
 
-const CreateDeveloperModal = () => {
-  const user = supabase.auth.user();
+export const UpdateUserModal = ({ user, children }) => {
+  console.log(`user`, user);
+  const [languages, setLanguages] = useState(
+    user?.programingLanguages ? user?.programingLanguages : []
+  );
 
-  const [languages, setLanguages] = useState([]);
-  const [technologies, setTechnologies] = useState([]);
+  const [technologies, setTechnologies] = useState(
+    user?.technologies ? user?.technologies : []
+  );
 
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { handleSubmit, register } = useForm();
 
-  const onCreateDeveloper = async (data) => {
+  const onUpdateUser = async (data) => {
     try {
       /** Creating the user  */
       console.log(`data`, data);
 
+      const { data: response, error } = await UpdateUser(user?.id, {
+        ...data,
+        languages,
+        technologies,
+      });
       toast({
-        title: "Éxito!",
+        title: error === null ? "Éxito!" : "Error",
         description:
-          "Haz creado un nuevo desarrollador. Dile que revise su bandeja de correo",
-        status: "success",
-        duration: 5000,
+          error === null
+            ? "Haz actualizado correctamente los datos."
+            : "Ocurrió un error, intente de nuevo.",
+        status: error === null ? "success" : "error",
+        duration: 2500,
         isClosable: true,
       });
+
+      console.log(`error`, error);
+
+      mutate("/api/developers");
 
       onClose();
     } catch (error) {
       toast({
         title: "Error!",
-        description: "Ha ocurrido un error, intentelo de nuevo",
+        description: "Ocurrió un error, intente de nuevo.",
         status: "error",
-        duration: 5000,
+        duration: 2500,
         isClosable: true,
       });
 
@@ -61,11 +79,13 @@ const CreateDeveloperModal = () => {
 
   return (
     <>
-      <Button onClick={onOpen}>Añadir desarrollador</Button>
+      <Button id="update-user-modal-button" onClick={onOpen} variant="link">
+        {children}
+      </Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent as="form" onSubmit={handleSubmit(onCreateDeveloper)}>
-          <ModalHeader>Agregar nuevo desarrollador</ModalHeader>
+        <ModalContent as="form" onSubmit={handleSubmit(onUpdateUser)}>
+          <ModalHeader>Actualizando datos del usuario</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <Stack spacing="6">
@@ -76,17 +96,8 @@ const CreateDeveloperModal = () => {
                   ref={register}
                   id="name"
                   name="name"
-                />
-              </FormControl>
-
-              <FormControl id="email" isRequired>
-                <FormLabel>Email</FormLabel>
-                <Input
-                  placeholder="nombre@dominio.com"
-                  ref={register}
-                  type="email"
-                  id="email"
-                  name="email"
+                  key={user?.name}
+                  defaultValue={user?.name}
                 />
               </FormControl>
 
@@ -109,18 +120,28 @@ const CreateDeveloperModal = () => {
                   }
                 />
               </FormControl>
+
+              <FormControl id="active" mt={3}>
+                <FormLabel ml={2}>Activo</FormLabel>
+                <Switch
+                  id="active"
+                  name="active"
+                  size="lg"
+                  colorScheme="teal"
+                  ref={register}
+                  defaultChecked={user?.active}
+                />
+              </FormControl>
             </Stack>
           </ModalBody>
           <ModalFooter>
+            <Button onClick={onClose}>Cancelar</Button>
             <Button colorScheme="blue" mr={3} type="submit">
               Guardar
             </Button>
-            <Button onClick={onClose}>Cancelar</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
     </>
   );
 };
-
-export { CreateDeveloperModal };
