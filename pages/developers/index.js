@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 import useSWR from "swr";
-import { supabase } from "@lib/initSupabase";
 import fetcher from "@utils/fetcher";
 import { Flex, Heading, HStack, Tag } from "@chakra-ui/react";
 import { TableSkeleton } from "@/components/molecules/index";
@@ -60,7 +59,6 @@ const Developers = () => {
   const headers = fields.map((header) => header.Header);
 
   const { data: developers, error } = useSWR("/api/developers", fetcher);
-  console.log(`developers`, developers);
 
   if (error) return <div>failed to load</div>;
   if (!developers) return <TableSkeleton headers={headers} />;
