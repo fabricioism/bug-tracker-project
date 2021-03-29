@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { supabase } from "@lib/initSupabase";
-import { Logo } from "@/constants/logo";
+import styles from "./styles.module.css";
 
 const Footer = () => {
   const router = useRouter();
@@ -11,7 +11,10 @@ const Footer = () => {
   /**  grid-row-start: 2;
   grid-row-end: 3; */
   return pathname !== "/login" ? (
-    <footer className="text-gray-600 body-font" style={{ flexShrink: 0 }}>
+    <footer
+      className={`text-gray-600 body-font  ${styles.footer}`}
+      style={{ flexShrink: 0 }}
+    >
       <div className="container px-5 py-8 mx-auto flex items-center sm:flex-row flex-col">
         <Link href="/">
           <a className="flex title-font font-medium items-center md:justify-start justify-center text-gray-900">

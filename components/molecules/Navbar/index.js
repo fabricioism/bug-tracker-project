@@ -20,6 +20,10 @@ const Navbar = () => {
         <Link href="/projects">
           <a className="mr-5 hover:text-gray-900">Projects</a>
         </Link>
+
+        <Link href="/qas">
+          <a className="mr-5 hover:text-gray-900">QAs</a>
+        </Link>
       </>
     );
   };
