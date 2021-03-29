@@ -1,7 +1,6 @@
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { mutate } from "swr";
-import { UpdateUser } from "@lib/db";
+import { UpdateBug } from "@lib/db";
 import {
   Button,
   FormControl,
@@ -14,36 +13,23 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
+  Select,
   Stack,
-  Switch,
+  Textarea,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import ReactTagInput from "@pathofdev/react-tag-input";
-import "@pathofdev/react-tag-input/build/index.css";
+import { bugStates, priorities } from "@/constants/states";
 
-// import { supabase } from "@lib/initSupabase";
-
-export const UpdateUserModal = ({ user, children }) => {
-  const [languages, setLanguages] = useState(
-    user?.programingLanguages ? user?.programingLanguages : []
-  );
-
-  const [technologies, setTechnologies] = useState(
-    user?.technologies ? user?.technologies : []
-  );
-
+export const UpdateBugModal = ({ bug, children }) => {
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { handleSubmit, register } = useForm();
 
-  const onUpdateUser = async (data) => {
+  const onUpdateBug = async (data) => {
     try {
-      const { data: response, error } = await UpdateUser(user?.id, {
-        ...data,
-        languages,
-        technologies,
-      });
+      const { data: response, error } = await UpdateBug(bug?.id, data);
+
       toast({
         title: error === null ? "Éxito!" : "Error",
         description:
@@ -55,7 +41,7 @@ export const UpdateUserModal = ({ user, children }) => {
         isClosable: true,
       });
 
-      mutate("/api/developers");
+      mutate("/api/bugs");
 
       onClose();
     } catch (error) {
@@ -73,13 +59,13 @@ export const UpdateUserModal = ({ user, children }) => {
 
   return (
     <>
-      <Button id="update-user-modal-button" onClick={onOpen} variant="link">
+      <Button id="update-bug-modal-button" onClick={onOpen} variant="link">
         {children}
       </Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent as="form" onSubmit={handleSubmit(onUpdateUser)}>
-          <ModalHeader>Actualizando datos del usuario</ModalHeader>
+        <ModalContent as="form" onSubmit={handleSubmit(onUpdateBug)}>
+          <ModalHeader>Actualizando datos del bug</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <Stack spacing="6">
@@ -90,41 +76,51 @@ export const UpdateUserModal = ({ user, children }) => {
                   ref={register}
                   id="name"
                   name="name"
-                  key={user?.name}
-                  defaultValue={user?.name}
+                  key={bug?.name}
+                  defaultValue={bug?.name}
                 />
               </FormControl>
 
-              <FormControl id="programmingLanguages">
-                <FormLabel>Lenguajes de programación</FormLabel>
-                <ReactTagInput
-                  removeOnBackspace
-                  tags={languages}
-                  onChange={(newLanguages) => setLanguages(newLanguages)}
-                />
-              </FormControl>
-
-              <FormControl id="technologies">
-                <FormLabel>Tecnologías</FormLabel>
-                <ReactTagInput
-                  removeOnBackspace
-                  tags={technologies}
-                  onChange={(newTechnologies) =>
-                    setTechnologies(newTechnologies)
-                  }
-                />
-              </FormControl>
-
-              <FormControl id="active" mt={3}>
-                <FormLabel ml={2}>Activo</FormLabel>
-                <Switch
-                  id="active"
-                  name="active"
-                  size="lg"
-                  colorScheme="teal"
+              <FormControl id="description" isRequired>
+                <FormLabel>Descripción</FormLabel>
+                <Textarea
+                  placeholder="Descripción del bug"
+                  id="description"
+                  name="description"
+                  resize={"horizontal"}
+                  size={"md"}
                   ref={register}
-                  defaultChecked={user?.active}
+                  key={bug?.id}
+                  defaultValue={bug?.description}
                 />
+              </FormControl>
+
+              <FormControl id="priority" isRequired>
+                <FormLabel>Priority</FormLabel>
+                <Select
+                  defaultValue={bug?.priority}
+                  id="priority"
+                  name="priority"
+                  ref={register}
+                >
+                  {Object.entries(priorities).map((item) => (
+                    <option value={item[1]["value"]}>{item[1]["label"]}</option>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <FormControl id="bugstate" isRequired>
+                <FormLabel>Bug state</FormLabel>
+                <Select
+                  defaultValue={bug?.bugstate}
+                  id="bugstate"
+                  name="bugstate"
+                  ref={register}
+                >
+                  {Object.entries(bugStates).map((item) => (
+                    <option value={item[1]["value"]}>{item[1]["label"]}</option>
+                  ))}
+                </Select>
               </FormControl>
             </Stack>
           </ModalBody>
