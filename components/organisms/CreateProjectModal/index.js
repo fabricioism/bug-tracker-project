@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form";
+import { mutate } from "swr";
 import {
   Button,
   FormControl,
@@ -11,25 +12,48 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
+  Select,
   Stack,
+  Textarea,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import { CreteProject } from "@lib/db";
 
 const CreateProjectModal = () => {
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { handleSubmit, register } = useForm();
 
-  const onCreateProject = (data) => {
-    console.log("data", data);
-    toast({
-      title: "Éxito!",
-      description: "Haz creado un nuevo contacto.",
-      status: "success",
-      duration: 5000,
-      isClosable: true,
-    });
+  const onCreateProject = async (data) => {
+    try {
+      const { data: response, error } = await CreteProject(data);
+
+      toast({
+        title: error === null ? "Éxito!" : "Error",
+        description:
+          error === null
+            ? "Haz creado un proyecto"
+            : "Ocurrió un error, intente de nuevo.",
+        status: error === null ? "success" : "error",
+        duration: 2500,
+        isClosable: true,
+      });
+
+      mutate("/api/projects");
+
+      onClose();
+    } catch (error) {
+      toast({
+        title: "Error!",
+        description: "Ocurrió un error, intente de nuevo.",
+        status: "error",
+        duration: 2500,
+        isClosable: true,
+      });
+
+      onClose();
+    }
   };
 
   return (
@@ -52,27 +76,19 @@ const CreateProjectModal = () => {
                 />
               </FormControl>
 
-              <FormControl id="startDate" isRequired>
+              <FormControl id="startDate">
                 <FormLabel>Fecha de inicio del proyecto</FormLabel>
                 <input
                   type="date"
                   id="startDate"
                   name="startDate"
-                  min="2021-03-12"
                   ref={register}
                 />
               </FormControl>
 
-              <FormControl id="endDate" isRequired>
+              <FormControl id="endDate">
                 <FormLabel>Fecha de finalización del proyecto</FormLabel>
-                <input
-                  type="date"
-                  id="endDate"
-                  name="endDate"
-                  min="2021-03-12"
-                  value="2021-03-12"
-                  ref={register}
-                />
+                <input type="date" id="endDate" name="endDate" ref={register} />
               </FormControl>
             </Stack>
           </ModalBody>

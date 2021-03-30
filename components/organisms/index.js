@@ -3,3 +3,4 @@ export { CreateProjectModal } from "./CreateProjectModal";
 export { ReactTable } from "./ReactTable";
 export { UpdateUserModal } from "./UpdateUserModal";
 export { UpdateBugModal } from "./UpdateBugModal";
+export { UpdateProjectModal } from "./UpdateProjectModal";

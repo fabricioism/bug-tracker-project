@@ -1,9 +1,13 @@
 import { useMemo } from "react";
 import useSWR from "swr";
 import fetcher from "@utils/fetcher";
-import { Flex, Heading, HStack, Tag } from "@chakra-ui/react";
+import { Flex, Heading } from "@chakra-ui/react";
 import { TableSkeleton } from "@/components/molecules/index";
-import { CreateProjectModal, ReactTable } from "@/components/organisms/index";
+import {
+  CreateProjectModal,
+  ReactTable,
+  UpdateProjectModal,
+} from "@/components/organisms/index";
 import { PrivateRoute } from "@/components/routing/PrivateRoute";
 
 const cellValueHandler = ({ cell, row }) => {
@@ -11,6 +15,12 @@ const cellValueHandler = ({ cell, row }) => {
   switch (cell.column.id) {
     case "active":
       value = row.values.active ? "✅" : "❌";
+      break;
+    case "name":
+      value = (
+        <UpdateProjectModal project={row.original} children={row.values.name} />
+      );
+
       break;
     default:
       value = cell.render("Cell");
@@ -20,10 +30,10 @@ const cellValueHandler = ({ cell, row }) => {
 };
 
 const fields = [
-  { Header: "active", accessor: "active" },
   { Header: "Name", accessor: "name" },
-  { Header: "End date", accessor: "endDate" },
   { Header: "Start date", accessor: "startDate" },
+  { Header: "End date", accessor: "endDate" },
+  { Header: "active", accessor: "active" },
 ];
 
 const Projects = () => {

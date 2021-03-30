@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
 import { mutate } from "swr";
+import { UpdateProject } from "@lib/db";
 import {
   Button,
   FormControl,
@@ -12,38 +13,32 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-  Select,
   Stack,
-  Textarea,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { bugStates, priorities } from "@/constants/states";
-import { CreateBug } from "@lib/db";
 
-const CreateBugModal = () => {
+export const UpdateProjectModal = ({ project, children }) => {
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { handleSubmit, register } = useForm();
 
-  const onCreateBug = async (data) => {
+  const onUpdateProject = async (data) => {
     try {
-      const newBug = data;
-
-      const { data: response, error } = await CreateBug(data);
+      const { data: response, error } = await UpdateProject(project?.id, data);
 
       toast({
         title: error === null ? "Éxito!" : "Error",
         description:
           error === null
-            ? "Haz creado una alerta de bug"
+            ? "Haz actualizado correctamente los datos."
             : "Ocurrió un error, intente de nuevo.",
         status: error === null ? "success" : "error",
         duration: 2500,
         isClosable: true,
       });
 
-      mutate("/api/bugs");
+      mutate("/api/projects");
 
       onClose();
     } catch (error) {
@@ -58,67 +53,61 @@ const CreateBugModal = () => {
       onClose();
     }
   };
+
   return (
     <>
-      <Button onClick={onOpen}>Añadir nuevo Bug</Button>
+      <Button id="update-bug-modal-button" onClick={onOpen} variant="link">
+        {children}
+      </Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent as="form" onSubmit={handleSubmit(onCreateBug)}>
-          <ModalHeader>Crear alerta de Bug</ModalHeader>
+        <ModalContent as="form" onSubmit={handleSubmit(onUpdateProject)}>
+          <ModalHeader>Actualizando datos del bug</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <Stack spacing="6">
               <FormControl id="name" isRequired>
                 <FormLabel>Nombre</FormLabel>
                 <Input
-                  placeholder="Ingresa el nombre"
+                  placeholder="Nombre del proyecto"
+                  defaultValue={project?.name}
                   ref={register}
                   id="name"
                   name="name"
                 />
               </FormControl>
 
-              <FormControl id="description" isRequired>
-                <FormLabel>Descripción</FormLabel>
-                <Textarea
-                  placeholder="Descripción del bug"
-                  id="description"
-                  name="description"
-                  resize={"horizontal"}
-                  size={"md"}
+              <FormControl id="startDate">
+                <FormLabel>Fecha de inicio del proyecto</FormLabel>
+                <input
+                  type="date"
+                  id="startDate"
+                  name="startDate"
+                  defaultValue={project?.startDate}
                   ref={register}
                 />
               </FormControl>
 
-              <FormControl id="priority" isRequired>
-                <FormLabel>Priority</FormLabel>
-                <Select id="priority" name="priority" ref={register}>
-                  {Object.entries(priorities).map((item) => (
-                    <option value={item[1]["value"]}>{item[1]["label"]}</option>
-                  ))}
-                </Select>
-              </FormControl>
-
-              <FormControl id="bugstate" isRequired>
-                <FormLabel>Bug state</FormLabel>
-                <Select id="bugstate" name="bugstate" ref={register}>
-                  {Object.entries(bugStates).map((item) => (
-                    <option value={item[1]["value"]}>{item[1]["label"]}</option>
-                  ))}
-                </Select>
+              <FormControl id="endDate">
+                <FormLabel>Fecha de finalización del proyecto</FormLabel>
+                <input
+                  type="date"
+                  id="endDate"
+                  name="endDate"
+                  defaultValue={project?.endDate}
+                  ref={register}
+                />
               </FormControl>
             </Stack>
           </ModalBody>
           <ModalFooter>
+            <Button onClick={onClose}>Cancelar</Button>
             <Button colorScheme="blue" mr={3} type="submit">
               Guardar
             </Button>
-            <Button onClick={onClose}>Cancelar</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
     </>
   );
 };
-
-export { CreateBugModal };
