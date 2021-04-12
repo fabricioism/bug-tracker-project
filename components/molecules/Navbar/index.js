@@ -2,11 +2,11 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { supabase } from "@lib/initSupabase";
 
-const Navbar = () => {
+const Navbar = ({ role }) => {
   const router = useRouter();
   const { pathname } = router;
   const user = supabase.auth.user();
-  console.log(`user`, user);
+
   const AdminLinks = () => {
     return (
       <>
@@ -30,27 +30,27 @@ const Navbar = () => {
   };
 
   const DeveloperLinks = () => {
-    <>
-      <Link href="#">
-        <a className="mr-5 hover:text-gray-900">Bugs</a>
-      </Link>
+    return (
+      <>
+        <Link href="/dev/bugs">
+          <a className="mr-5 hover:text-gray-900">Bugs</a>
+        </Link>
 
-      <Link href="#">
-        <a className="mr-5 hover:text-gray-900">Projects</a>
-      </Link>
-    </>;
+        <Link href="/dev/projects">
+          <a className="mr-5 hover:text-gray-900">Projects</a>
+        </Link>
+      </>
+    );
   };
 
   const QALinks = () => {
-    <>
-      <Link href="#">
-        <a className="mr-5 hover:text-gray-900">Bugs</a>
-      </Link>
-
-      <Link href="#">
-        <a className="mr-5 hover:text-gray-900">Projects</a>
-      </Link>
-    </>;
+    return (
+      <>
+        <Link href="/qas/bugs">
+          <a className="mr-5 hover:text-gray-900">Bugs</a>
+        </Link>
+      </>
+    );
   };
 
   return pathname !== "/login" ? (
@@ -77,7 +77,13 @@ const Navbar = () => {
         </Link>
 
         <nav className="md:ml-auto flex flex-wrap items-center text-base justify-center">
-          <AdminLinks />
+          {role == 2 && user ? (
+            <AdminLinks />
+          ) : role == 3 ? (
+            <DeveloperLinks />
+          ) : role == 4 ? (
+            <QALinks />
+          ) : null}
         </nav>
         {!user ? (
           <>

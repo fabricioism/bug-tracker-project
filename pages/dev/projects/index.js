@@ -6,43 +6,17 @@ import { Auth } from "@supabase/ui";
 import Lottie from "react-lottie";
 import LottieForbidden from "../../../public/forbidden.json";
 import { defaultOptions } from "@/constants/lottieOptions";
-import { Flex, Heading, HStack, Tag } from "@chakra-ui/react";
+import { Flex, Heading } from "@chakra-ui/react";
 import { TableSkeleton } from "@/components/molecules/index";
-import { ReactTable, UpdateUserModal } from "@/components/organisms/index";
+import { ReactTable } from "@/components/organisms/index";
 import { PrivateRoute } from "@/components/routing/PrivateRoute";
+import { supabase } from "@lib/initSupabase";
 
 const cellValueHandler = ({ cell, row }) => {
   let value;
   switch (cell.column.id) {
     case "active":
       value = row.values.active ? "✅" : "❌";
-      break;
-    case "email":
-      value = (
-        <UpdateUserModal user={row.original} children={row.values.email} />
-      );
-      break;
-    case "programingLanguages":
-      value = (
-        <HStack spacing={4}>
-          {row.values.programingLanguages?.map((language) => (
-            <Tag colorScheme="purple" key={language}>
-              {language}
-            </Tag>
-          ))}
-        </HStack>
-      );
-      break;
-    case "technologies":
-      value = (
-        <HStack spacing={4}>
-          {row.values.technologies?.map((tech) => (
-            <Tag colorScheme="red" key={tech}>
-              {tech}
-            </Tag>
-          ))}
-        </HStack>
-      );
       break;
     default:
       value = cell.render("Cell");
@@ -52,14 +26,14 @@ const cellValueHandler = ({ cell, row }) => {
 };
 
 const fields = [
-  { Header: "Email", accessor: "email" },
   { Header: "Name", accessor: "name" },
-  { Header: "Programing languages", accessor: "programingLanguages" },
-  { Header: "Technologies", accessor: "technologies" },
-  { Header: "Active", accessor: "active" },
+  { Header: "Start date", accessor: "startDate" },
+  { Header: "End date", accessor: "endDate" },
+  { Header: "active", accessor: "active" },
 ];
 
-const Developers = () => {
+const Projects = () => {
+  const user = supabase.auth.user();
   const columns = useMemo(() => fields, []);
   const headers = fields.map((header) => header.Header);
 
@@ -72,28 +46,30 @@ const Developers = () => {
   if (userError) return <div>failed to load</div>;
   if (!userData) return <Spinner />;
 
-  const { data: developers, error } = useSWR("/api/developers", fetcher);
+  const { data: projects, error } = useSWR(
+    user ? ["/api/developers/projects", user?.id] : null,
+    fetcher
+  );
 
   if (error) return <div>failed to load</div>;
-  if (!developers) return <TableSkeleton headers={headers} />;
+  if (!projects) return <TableSkeleton headers={headers} />;
 
   return (
     <PrivateRoute>
-      {userData[0]?.role == 1 ? (
+      {userData[0]?.role == 3 ? (
         <>
-          {" "}
           <Head>
-            <title>Developers | Bug tracker</title>
+            <title>Projects | Bug tracker</title>
             <meta
               name="viewport"
               content="initial-scale=1.0, width=device-width"
             />
           </Head>
           <Flex justify="flex-start" margin="5px 10px 20px 10px">
-            <Heading size="lg">Developers</Heading>
+            <Heading size="lg">Projects</Heading>
           </Flex>
           <ReactTable
-            data={developers}
+            data={projects}
             columns={columns}
             cellValueHandler={cellValueHandler}
           />
@@ -112,4 +88,4 @@ const Developers = () => {
   );
 };
 
-export default Developers;
+export default Projects;

@@ -7,26 +7,19 @@ import Lottie from "react-lottie";
 import LottieForbidden from "../../../public/forbidden.json";
 import { defaultOptions } from "@/constants/lottieOptions";
 import {
-  Avatar,
   Flex,
   Heading,
-  HStack,
   Icon,
   IconButton,
   Tag,
   Tooltip,
-  Wrap,
-  WrapItem,
 } from "@chakra-ui/react";
 import { AiOutlineCheck } from "react-icons/ai";
 import { TableSkeleton } from "@/components/molecules/index";
-import {
-  CreateBugModal,
-  ReactTable,
-  UpdateBugModal,
-} from "@/components/organisms/index";
+import { ReactTable } from "@/components/organisms/index";
 import { bugStates, priorities } from "@/constants/states";
 import { PrivateRoute } from "@/components/routing/PrivateRoute";
+import { supabase } from "@lib/initSupabase";
 
 const cellValueHandler = ({ cell, row }) => {
   let value;
@@ -48,9 +41,7 @@ const cellValueHandler = ({ cell, row }) => {
     case "active":
       value = row.values.active ? "✅" : "❌";
       break;
-    case "name":
-      value = <UpdateBugModal bug={row.original} children={row.values.name} />;
-      break;
+
     case "bugstate":
       value = (
         <Tag colorScheme={bugStates[row.values.bugstate]["color"]}>
@@ -77,21 +68,6 @@ const cellValueHandler = ({ cell, row }) => {
     case "project":
       value = <p>{row.values.project.name}</p>;
       break;
-    case "users":
-      value = (
-        <Wrap>
-          <Tooltip
-            label={row.values.users.name}
-            fontSize="md"
-            key={Math.random().toString(36).substring(7)}
-          >
-            <WrapItem key={Math.random().toString(36).substring(7)}>
-              <Avatar size="xs" name={row.values.users.email} />
-            </WrapItem>
-          </Tooltip>
-        </Wrap>
-      );
-      break;
     default:
       value = cell.render("Cell");
       break;
@@ -103,7 +79,6 @@ const fields = [
   { Header: "Name", accessor: "name" },
   { Header: "description", accessor: "description" },
   { Header: "Project", accessor: "project" },
-  { Header: "Developer", accessor: "users" },
   { Header: "Bug state", accessor: "bugstate" },
   { Header: "Priority", accessor: "priority" },
   { Header: "Start date", accessor: "startDate" },
@@ -111,6 +86,7 @@ const fields = [
 ];
 
 const Bugs = () => {
+  const user = supabase.auth.user();
   const [project, setProject] = useState({});
   const columns = useMemo(() => fields, []);
   const headers = fields.map((header) => header.Header);
@@ -124,14 +100,17 @@ const Bugs = () => {
   if (userError) return <div>failed to load</div>;
   if (!userData) return <Spinner />;
 
-  const { data: bugs, error } = useSWR("/api/bugs", fetcher);
+  const { data: bugs, error } = useSWR(
+    user ? ["/api/developers/bugs", user?.id] : null,
+    fetcher
+  );
 
   if (error) return <div>failed to load</div>;
   if (!bugs) return <TableSkeleton headers={headers} />;
 
   return (
     <PrivateRoute>
-      {userData[0]?.role == 1 ? (
+      {userData[0]?.role == 3 ? (
         <>
           <Head>
             <title>Bugs | Bug tracker</title>
@@ -142,9 +121,6 @@ const Bugs = () => {
           </Head>
           <Flex justify="flex-start" margin="5px 10px 20px 10px">
             <Heading size="lg">Bugs</Heading>
-          </Flex>
-          <Flex justify="flex-end" margin="15px 10px 30px 10px">
-            <CreateBugModal />
           </Flex>
           <ReactTable
             data={bugs}

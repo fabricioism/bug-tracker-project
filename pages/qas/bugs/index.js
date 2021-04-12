@@ -2,15 +2,10 @@ import Head from "next/head";
 import { useMemo, useState } from "react";
 import useSWR from "swr";
 import fetcher from "@utils/fetcher";
-import { Auth } from "@supabase/ui";
-import Lottie from "react-lottie";
-import LottieForbidden from "../../../public/forbidden.json";
-import { defaultOptions } from "@/constants/lottieOptions";
 import {
   Avatar,
   Flex,
   Heading,
-  HStack,
   Icon,
   IconButton,
   Tag,
@@ -18,6 +13,10 @@ import {
   Wrap,
   WrapItem,
 } from "@chakra-ui/react";
+import { Auth } from "@supabase/ui";
+import Lottie from "react-lottie";
+import LottieForbidden from "../../../public/forbidden.json";
+import { defaultOptions } from "@/constants/lottieOptions";
 import { AiOutlineCheck } from "react-icons/ai";
 import { TableSkeleton } from "@/components/molecules/index";
 import {
@@ -129,9 +128,10 @@ const Bugs = () => {
   if (error) return <div>failed to load</div>;
   if (!bugs) return <TableSkeleton headers={headers} />;
 
+  console.log(`bugs`, bugs);
   return (
     <PrivateRoute>
-      {userData[0]?.role == 1 ? (
+      {userData[0]?.role == 4 ? (
         <>
           <Head>
             <title>Bugs | Bug tracker</title>

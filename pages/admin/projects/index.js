@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import useSWR from "swr";
 import fetcher from "@utils/fetcher";
 import {
