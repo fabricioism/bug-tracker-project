@@ -44,6 +44,10 @@ export const UpdateUserModal = ({ user, children }) => {
         languages,
         technologies,
       });
+
+      console.log(`response`, response);
+      console.log(`error`, error);
+
       toast({
         title: error === null ? "Éxito!" : "Error",
         description:
@@ -79,14 +83,14 @@ export const UpdateUserModal = ({ user, children }) => {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent as="form" onSubmit={handleSubmit(onUpdateUser)}>
-          <ModalHeader>Actualizando datos del usuario</ModalHeader>
+          <ModalHeader>Updating user data</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <Stack spacing="6">
               <FormControl id="name" isRequired>
-                <FormLabel>Nombre</FormLabel>
+                <FormLabel>Name</FormLabel>
                 <Input
-                  placeholder="Ingresa el nombre"
+                  placeholder="Tim Cook"
                   ref={register}
                   id="name"
                   name="name"
@@ -96,7 +100,7 @@ export const UpdateUserModal = ({ user, children }) => {
               </FormControl>
 
               <FormControl id="programmingLanguages">
-                <FormLabel>Lenguajes de programación</FormLabel>
+                <FormLabel>Programming languages</FormLabel>
                 <ReactTagInput
                   removeOnBackspace
                   tags={languages}
@@ -105,7 +109,7 @@ export const UpdateUserModal = ({ user, children }) => {
               </FormControl>
 
               <FormControl id="technologies">
-                <FormLabel>Tecnologías</FormLabel>
+                <FormLabel>Technologies</FormLabel>
                 <ReactTagInput
                   removeOnBackspace
                   tags={technologies}

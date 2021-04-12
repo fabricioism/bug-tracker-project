@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { mutate } from "swr";
 import { UpdateBug } from "@lib/db";
@@ -20,15 +21,31 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { bugStates, priorities } from "@/constants/states";
+import { AS as AsyncSelect } from "@/components/atoms/index";
 
 export const UpdateBugModal = ({ bug, children }) => {
+  const [dev, setDeveloper] = useState({
+    label: bug?.users?.name,
+    value: bug?.users?.id,
+  });
+  const [project, setProject] = useState({
+    label: bug?.project?.name,
+    value: bug?.project?.id,
+  });
+
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { handleSubmit, register } = useForm();
 
   const onUpdateBug = async (data) => {
     try {
-      const { data: response, error } = await UpdateBug(bug?.id, data);
+      let newBug = {
+        ...data,
+        developer: Object.keys(dev).length ? dev?.value : null,
+        project: Object.keys(project).length ? project?.value : null,
+      };
+
+      const { data: response, error } = await UpdateBug(bug?.id, newBug);
 
       toast({
         title: error === null ? "Éxito!" : "Error",
@@ -65,14 +82,14 @@ export const UpdateBugModal = ({ bug, children }) => {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent as="form" onSubmit={handleSubmit(onUpdateBug)}>
-          <ModalHeader>Actualizando datos del bug</ModalHeader>
+          <ModalHeader>Updating bug alert</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <Stack spacing="6">
               <FormControl id="name" isRequired>
-                <FormLabel>Nombre</FormLabel>
+                <FormLabel>Name</FormLabel>
                 <Input
-                  placeholder="Ingresa el nombre"
+                  placeholder="Write here bug name"
                   ref={register}
                   id="name"
                   name="name"
@@ -82,9 +99,9 @@ export const UpdateBugModal = ({ bug, children }) => {
               </FormControl>
 
               <FormControl id="description" isRequired>
-                <FormLabel>Descripción</FormLabel>
+                <FormLabel>Description</FormLabel>
                 <Textarea
-                  placeholder="Descripción del bug"
+                  placeholder="Write here the description about the bug"
                   id="description"
                   name="description"
                   resize={"horizontal"}
@@ -104,7 +121,9 @@ export const UpdateBugModal = ({ bug, children }) => {
                   ref={register}
                 >
                   {Object.entries(priorities).map((item) => (
-                    <option value={item[1]["value"]}>{item[1]["label"]}</option>
+                    <option value={item[1]["value"]} key={item[1]["value"]}>
+                      {item[1]["label"]}
+                    </option>
                   ))}
                 </Select>
               </FormControl>
@@ -118,17 +137,45 @@ export const UpdateBugModal = ({ bug, children }) => {
                   ref={register}
                 >
                   {Object.entries(bugStates).map((item) => (
-                    <option value={item[1]["value"]}>{item[1]["label"]}</option>
+                    <option value={item[1]["value"]} key={item[1]["value"]}>
+                      {item[1]["label"]}
+                    </option>
                   ))}
                 </Select>
+              </FormControl>
+
+              <FormControl id="project" mt={3}>
+                <FormLabel>Project</FormLabel>
+                <AsyncSelect
+                  api="/api/projects"
+                  valueField="id"
+                  labelField="name"
+                  isMulti={false}
+                  defaultValue={project}
+                  setFunction={setProject}
+                />
+              </FormControl>
+
+              <FormControl id="developers" mt={3}>
+                <FormLabel>Developer</FormLabel>
+                <AsyncSelect
+                  api="/api/developers"
+                  valueField="id"
+                  labelField="name"
+                  isMulti={false}
+                  defaultValue={dev}
+                  setFunction={setDeveloper}
+                />
               </FormControl>
             </Stack>
           </ModalBody>
           <ModalFooter>
-            <Button onClick={onClose}>Cancelar</Button>
-            <Button colorScheme="blue" mr={3} type="submit">
-              Guardar
-            </Button>
+            <Stack spacing={4} direction="row">
+              <Button onClick={onClose}>Cancel</Button>
+              <Button colorScheme="blue" mr={3} type="submit">
+                Save
+              </Button>
+            </Stack>
           </ModalFooter>
         </ModalContent>
       </Modal>

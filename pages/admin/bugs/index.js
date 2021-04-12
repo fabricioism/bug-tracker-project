@@ -1,7 +1,9 @@
-import { useMemo } from "react";
+import Head from "next/head";
+import { useMemo, useState } from "react";
 import useSWR from "swr";
 import fetcher from "@utils/fetcher";
 import {
+  Avatar,
   Flex,
   Heading,
   HStack,
@@ -9,6 +11,8 @@ import {
   IconButton,
   Tag,
   Tooltip,
+  Wrap,
+  WrapItem,
 } from "@chakra-ui/react";
 import { AiOutlineCheck } from "react-icons/ai";
 import { TableSkeleton } from "@/components/molecules/index";
@@ -25,8 +29,15 @@ const cellValueHandler = ({ cell, row }) => {
   switch (cell.column.id) {
     case "action":
       value = (
-        <Tooltip label="Mark as done">
-          <IconButton aria-label="bug done" icon={<AiOutlineCheck />} />
+        <Tooltip
+          label="Mark as done"
+          key={Math.random().toString(36).substring(7)}
+        >
+          <IconButton
+            aria-label="bug done"
+            icon={<AiOutlineCheck />}
+            key={Math.random().toString(36).substring(7)}
+          />
         </Tooltip>
       );
       break;
@@ -48,12 +59,33 @@ const cellValueHandler = ({ cell, row }) => {
         <Icon
           viewBox="0 0 20 20"
           color={priorities[row.values.priority]["color"]}
+          key={Math.random().toString(36).substring(7)}
         >
-          <path
-            fill="currentColor"
-            d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 8l2.55 3.4A1 1 0 0116 13H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z"
-          />
+          <Tooltip label={priorities[row.values.priority]["label"]}>
+            <path
+              fill="currentColor"
+              d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 8l2.55 3.4A1 1 0 0116 13H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z"
+            />
+          </Tooltip>
         </Icon>
+      );
+      break;
+    case "project":
+      value = <p>{row.values.project.name}</p>;
+      break;
+    case "users":
+      value = (
+        <Wrap>
+          <Tooltip
+            label={row.values.users.name}
+            fontSize="md"
+            key={Math.random().toString(36).substring(7)}
+          >
+            <WrapItem key={Math.random().toString(36).substring(7)}>
+              <Avatar size="xs" name={row.values.users.email} />
+            </WrapItem>
+          </Tooltip>
+        </Wrap>
       );
       break;
     default:
@@ -66,15 +98,16 @@ const cellValueHandler = ({ cell, row }) => {
 const fields = [
   { Header: "Name", accessor: "name" },
   { Header: "description", accessor: "description" },
+  { Header: "Project", accessor: "project" },
+  { Header: "Developer", accessor: "users" },
   { Header: "Bug state", accessor: "bugstate" },
   { Header: "Priority", accessor: "priority" },
   { Header: "Start date", accessor: "startDate" },
   { Header: "End date", accessor: "endDate" },
-  { Header: "Active", accessor: "active" },
-  { Header: "Actions", accessor: "action" },
 ];
 
 const Bugs = () => {
+  const [project, setProject] = useState({});
   const columns = useMemo(() => fields, []);
   const headers = fields.map((header) => header.Header);
 
@@ -83,8 +116,13 @@ const Bugs = () => {
   if (error) return <div>failed to load</div>;
   if (!bugs) return <TableSkeleton headers={headers} />;
 
+  console.log(`bugs`, bugs);
   return (
     <PrivateRoute>
+      <Head>
+        <title>Bugs | Bug tracker</title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
       <Flex justify="flex-start" margin="5px 10px 20px 10px">
         <Heading size="lg">Bugs</Heading>
       </Flex>

@@ -58,16 +58,16 @@ const CreateProjectModal = () => {
 
   return (
     <>
-      <Button onClick={onOpen}>Añadir Proyecto</Button>
+      <Button onClick={onOpen}>Add project</Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent as="form" onSubmit={handleSubmit(onCreateProject)}>
-          <ModalHeader>Crear proyecto</ModalHeader>
+          <ModalHeader>Add project</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <Stack spacing="6">
               <FormControl id="name" isRequired>
-                <FormLabel>Nombre</FormLabel>
+                <FormLabel>Project name</FormLabel>
                 <Input
                   placeholder="Nombre del proyecto"
                   ref={register}
@@ -77,7 +77,7 @@ const CreateProjectModal = () => {
               </FormControl>
 
               <FormControl id="startDate">
-                <FormLabel>Fecha de inicio del proyecto</FormLabel>
+                <FormLabel>Project Start Date</FormLabel>
                 <input
                   type="date"
                   id="startDate"
@@ -87,16 +87,18 @@ const CreateProjectModal = () => {
               </FormControl>
 
               <FormControl id="endDate">
-                <FormLabel>Fecha de finalización del proyecto</FormLabel>
+                <FormLabel>Project End Date</FormLabel>
                 <input type="date" id="endDate" name="endDate" ref={register} />
               </FormControl>
             </Stack>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} type="submit">
-              Guardar
-            </Button>
-            <Button onClick={onClose}>Cancelar</Button>
+            <Stack spacing={4} direction="row">
+              <Button onClick={onClose}>Cancel</Button>
+              <Button colorScheme="blue" mr={3} type="submit">
+                Save
+              </Button>
+            </Stack>
           </ModalFooter>
         </ModalContent>
       </Modal>

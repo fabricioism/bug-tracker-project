@@ -1,3 +1,4 @@
+import Head from "next/head";
 import { useMemo } from "react";
 import useSWR from "swr";
 import fetcher from "@utils/fetcher";
@@ -65,6 +66,10 @@ const Developers = () => {
 
   return (
     <PrivateRoute>
+      <Head>
+        <title>Developers | Bug tracker</title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
       <Flex justify="flex-start" margin="5px 10px 20px 10px">
         <Heading size="lg">Developers</Heading>
       </Flex>

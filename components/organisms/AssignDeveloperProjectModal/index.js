@@ -1,11 +1,10 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { mutate } from "swr";
-import { UpdateProject } from "@lib/db";
+import { AssignDevelopersToProject } from "@lib/db";
 import {
   Button,
   FormControl,
   FormLabel,
-  Input,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -17,15 +16,28 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import { AS as AsyncSelect } from "@/components/atoms/index";
 
-export const UpdateProjectModal = ({ project, children }) => {
+export const AssignDeveloperProjectModal = ({ project, children }) => {
+  const [developers, setDevelopers] = useState(
+    project?.projectxdeveloper?.map((dev) => {
+      return { label: dev?.users?.name, value: dev?.users?.id };
+    })
+  );
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { handleSubmit, register } = useForm();
+  const { handleSubmit } = useForm();
 
-  const onUpdateProject = async (data) => {
+  const onAssignDeveloper = async (data) => {
     try {
-      const { data: response, error } = await UpdateProject(project?.id, data);
+      let newValues = developers.map((developer) => {
+        return { project: project?.id, developer: developer?.value };
+      });
+
+      const { data: response, error } = await AssignDevelopersToProject(
+        project?.id,
+        newValues
+      );
 
       toast({
         title: error === null ? "Éxito!" : "Error",
@@ -37,8 +49,6 @@ export const UpdateProjectModal = ({ project, children }) => {
         duration: 2500,
         isClosable: true,
       });
-
-      mutate("/api/projects");
 
       onClose();
     } catch (error) {
@@ -56,46 +66,29 @@ export const UpdateProjectModal = ({ project, children }) => {
 
   return (
     <>
-      <Button id="update-bug-modal-button" onClick={onOpen} variant="link">
+      <Button
+        id="update-developers-modal-button"
+        onClick={onOpen}
+        variant="link"
+      >
         {children}
       </Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent as="form" onSubmit={handleSubmit(onUpdateProject)}>
-          <ModalHeader>Updating project</ModalHeader>
+        <ModalContent as="form" onSubmit={handleSubmit(onAssignDeveloper)}>
+          <ModalHeader>Assigning developers</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <Stack spacing="6">
-              <FormControl id="name" isRequired>
-                <FormLabel>Name</FormLabel>
-                <Input
-                  placeholder="Nombre del proyecto"
-                  defaultValue={project?.name}
-                  ref={register}
-                  id="name"
-                  name="name"
-                />
-              </FormControl>
-
-              <FormControl id="startDate">
-                <FormLabel>Start Date</FormLabel>
-                <input
-                  type="date"
-                  id="startDate"
-                  name="startDate"
-                  defaultValue={project?.startDate}
-                  ref={register}
-                />
-              </FormControl>
-
-              <FormControl id="endDate">
-                <FormLabel>End Date</FormLabel>
-                <input
-                  type="date"
-                  id="endDate"
-                  name="endDate"
-                  defaultValue={project?.endDate}
-                  ref={register}
+              <FormControl id="developers" mt={3}>
+                <FormLabel>Developers</FormLabel>
+                <AsyncSelect
+                  api="/api/developers"
+                  valueField="id"
+                  labelField="name"
+                  isMulti={true}
+                  defaultValue={developers}
+                  setFunction={setDevelopers}
                 />
               </FormControl>
             </Stack>

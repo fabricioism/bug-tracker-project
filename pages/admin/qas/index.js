@@ -1,3 +1,4 @@
+import Head from "next/head";
 import { useMemo } from "react";
 import useSWR from "swr";
 import { supabase } from "@lib/initSupabase";
@@ -66,6 +67,10 @@ const QAs = () => {
 
   return (
     <PrivateRoute>
+      <Head>
+        <title>QA Engineers | Bug tracker</title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
       <Flex justify="flex-start" margin="5px 10px 20px 10px">
         <Heading size="lg">QA Engineers</Heading>
       </Flex>

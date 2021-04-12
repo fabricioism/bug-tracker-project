@@ -1,3 +1,4 @@
+export { AssignDeveloperProjectModal } from "./AssignDeveloperProjectModal";
 export { CreateBugModal } from "./CreateBugModal";
 export { CreateProjectModal } from "./CreateProjectModal";
 export { ReactTable } from "./ReactTable";

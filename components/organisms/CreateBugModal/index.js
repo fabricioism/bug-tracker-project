@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { mutate } from "swr";
 import {
@@ -20,18 +21,24 @@ import {
 } from "@chakra-ui/react";
 import { bugStates, priorities } from "@/constants/states";
 import { CreateBug } from "@lib/db";
+import { AS as AsyncSelect } from "@/components/atoms/index";
 
 const CreateBugModal = () => {
+  const [dev, setDeveloper] = useState({});
+  const [project, setProject] = useState({});
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { handleSubmit, register } = useForm();
 
   const onCreateBug = async (data) => {
     try {
-      const newBug = data;
+      let newBug = {
+        ...data,
+        developer: Object.keys(dev).length ? dev?.value : null,
+        project: Object.keys(project).length ? project?.value : null,
+      };
 
-      const { data: response, error } = await CreateBug(data);
-
+      const { data: response, error } = await CreateBug(newBug);
       toast({
         title: error === null ? "Éxito!" : "Error",
         description:
@@ -60,18 +67,18 @@ const CreateBugModal = () => {
   };
   return (
     <>
-      <Button onClick={onOpen}>Añadir nuevo Bug</Button>
+      <Button onClick={onOpen}>Add Bug</Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent as="form" onSubmit={handleSubmit(onCreateBug)}>
-          <ModalHeader>Crear alerta de Bug</ModalHeader>
+          <ModalHeader>Add new bug alert</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <Stack spacing="6">
               <FormControl id="name" isRequired>
-                <FormLabel>Nombre</FormLabel>
+                <FormLabel>Name</FormLabel>
                 <Input
-                  placeholder="Ingresa el nombre"
+                  placeholder="Write here bug name"
                   ref={register}
                   id="name"
                   name="name"
@@ -79,9 +86,9 @@ const CreateBugModal = () => {
               </FormControl>
 
               <FormControl id="description" isRequired>
-                <FormLabel>Descripción</FormLabel>
+                <FormLabel>Description</FormLabel>
                 <Textarea
-                  placeholder="Descripción del bug"
+                  placeholder="Write here the description about the bug"
                   id="description"
                   name="description"
                   resize={"horizontal"}
@@ -94,7 +101,9 @@ const CreateBugModal = () => {
                 <FormLabel>Priority</FormLabel>
                 <Select id="priority" name="priority" ref={register}>
                   {Object.entries(priorities).map((item) => (
-                    <option value={item[1]["value"]}>{item[1]["label"]}</option>
+                    <option value={item[1]["value"]} key={item[1]["value"]}>
+                      {item[1]["label"]}
+                    </option>
                   ))}
                 </Select>
               </FormControl>
@@ -103,14 +112,45 @@ const CreateBugModal = () => {
                 <FormLabel>Bug state</FormLabel>
                 <Select id="bugstate" name="bugstate" ref={register}>
                   {Object.entries(bugStates).map((item) => (
-                    <option value={item[1]["value"]}>{item[1]["label"]}</option>
+                    <option value={item[1]["value"]} key={item[1]["value"]}>
+                      {item[1]["label"]}
+                    </option>
                   ))}
                 </Select>
+              </FormControl>
+
+              <FormControl id="project" mt={3}>
+                <FormLabel>Project</FormLabel>
+                <AsyncSelect
+                  api="/api/projects"
+                  valueField="id"
+                  labelField="name"
+                  isMulti={false}
+                  setFunction={setProject}
+                />
+              </FormControl>
+
+              <FormControl id="developers" mt={3}>
+                <FormLabel>Developer</FormLabel>
+                <AsyncSelect
+                  api="/api/developers"
+                  valueField="id"
+                  labelField="name"
+                  isMulti={false}
+                  setFunction={setDeveloper}
+                />
               </FormControl>
             </Stack>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} type="submit">
+            <Button
+              colorScheme="blue"
+              mr={3}
+              isDisabled={
+                !Object.keys(dev).length && !Object.keys(project).length
+              }
+              type="submit"
+            >
               Guardar
             </Button>
             <Button onClick={onClose}>Cancelar</Button>

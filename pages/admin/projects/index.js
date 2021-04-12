@@ -1,9 +1,18 @@
-import { useMemo } from "react";
+import Head from "next/head";
+import { useMemo, useState } from "react";
 import useSWR from "swr";
 import fetcher from "@utils/fetcher";
-import { Flex, Heading } from "@chakra-ui/react";
+import {
+  Avatar,
+  Flex,
+  Heading,
+  Tooltip,
+  Wrap,
+  WrapItem,
+} from "@chakra-ui/react";
 import { TableSkeleton } from "@/components/molecules/index";
 import {
+  AssignDeveloperProjectModal,
   CreateProjectModal,
   ReactTable,
   UpdateProjectModal,
@@ -20,7 +29,31 @@ const cellValueHandler = ({ cell, row }) => {
       value = (
         <UpdateProjectModal project={row.original} children={row.values.name} />
       );
-
+      break;
+    case "projectxdeveloper":
+      value = (
+        <Wrap>
+          {row.values.projectxdeveloper.map((dev) => (
+            <Tooltip
+              label={dev?.users?.name}
+              fontSize="md"
+              key={dev?.users?.id}
+            >
+              <WrapItem key={dev?.users?.id}>
+                <Avatar size="xs" name={dev?.users?.name} />
+              </WrapItem>
+            </Tooltip>
+          ))}
+        </Wrap>
+      );
+      break;
+    case "assign":
+      value = (
+        <AssignDeveloperProjectModal
+          project={row.original}
+          children={"Assign developers"}
+        />
+      );
       break;
     default:
       value = cell.render("Cell");
@@ -31,9 +64,11 @@ const cellValueHandler = ({ cell, row }) => {
 
 const fields = [
   { Header: "Name", accessor: "name" },
+  { Header: "Developers", accessor: "projectxdeveloper" },
   { Header: "Start date", accessor: "startDate" },
   { Header: "End date", accessor: "endDate" },
   { Header: "active", accessor: "active" },
+  { Header: "", accessor: "assign" },
 ];
 
 const Projects = () => {
@@ -47,6 +82,10 @@ const Projects = () => {
 
   return (
     <PrivateRoute>
+      <Head>
+        <title>Projects | Bug tracker</title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
       <Flex justify="flex-start" margin="5px 10px 20px 10px">
         <Heading size="lg">Projects</Heading>
       </Flex>

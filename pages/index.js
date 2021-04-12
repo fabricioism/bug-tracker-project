@@ -1,19 +1,26 @@
 import { PrivateRoute } from "@/components/routing/PrivateRoute";
-
+import Image from "next/image";
+import Head from "next/head";
 export default function Home() {
   return (
     <PrivateRoute>
-      <div className="flex flex-wrap w-full mb-10 flex-col items-center text-center">
-        <h1 className="sm:text-3xl text-2xl font-medium title-font mb-2 text-gray-900">
-          ¡El mejor servicio de gestión de bugs!
+      <Head>
+        <title>Home | Bug tracker</title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
+      <div className="flex flex-wrap w-full mb-5 flex-col items-center text-center">
+        <h1 className="sm:text-3xl text-2xl font-medium title-font text-gray-900">
+          Welcome to the best bug tracker tool!
         </h1>
-        <p className="lg:w-1/2 w-full leading-relaxed text-gray-500">
-          Whatever cardigan tote bag tumblr hexagon brooklyn asymmetrical
-          gentrify, subway tile poke farm-to-table.
-        </p>
       </div>
-      <div className="flex flex-wrap -m-4">
-        <div className="xl:w-1/3 md:w-1/2 p-4">
+      <div className="flex flex-wrap flex-col items-center">
+        <Image
+          src="https://zdzsyykqcghvtgnapyon.supabase.co/storage/v1/object/sign/bugtracker/pitch.svg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJidWd0cmFja2VyL3BpdGNoLnN2ZyIsImlhdCI6MTYxODIxODk0MiwiZXhwIjoxOTMzNTc4OTQyfQ.kopJB87xIEMAYgeDu0KiN3x4VdLoYccdTcLPNt8tg9M"
+          width="480"
+          height="435"
+          alt="Bug tracker"
+        />
+        {/* <div className="xl:w-1/3 md:w-1/2 p-4">
           <div className="border border-gray-200 p-6 rounded-lg">
             <div className="w-10 h-10 inline-flex items-center justify-center rounded-full bg-indigo-100 text-indigo-500 mb-4">
               <svg
@@ -159,7 +166,7 @@ export default function Home() {
               poke farm.
             </p>
           </div>
-        </div>
+        </div> */}
       </div>
     </PrivateRoute>
   );

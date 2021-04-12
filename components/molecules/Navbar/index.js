@@ -6,23 +6,24 @@ const Navbar = () => {
   const router = useRouter();
   const { pathname } = router;
   const user = supabase.auth.user();
+  console.log(`user`, user);
   const AdminLinks = () => {
     return (
       <>
-        <Link href="/bugs">
+        <Link href="/admin/bugs">
           <a className="mr-5 hover:text-gray-900">Bugs</a>
         </Link>
 
-        <Link href="/developers">
+        <Link href="/admin/developers">
           <a className="mr-5 hover:text-gray-900">Developers</a>
         </Link>
 
-        <Link href="/projects">
+        <Link href="/admin/projects">
           <a className="mr-5 hover:text-gray-900">Projects</a>
         </Link>
 
-        <Link href="/qas">
-          <a className="mr-5 hover:text-gray-900">QAs</a>
+        <Link href="/admin/qas">
+          <a className="mr-5 hover:text-gray-900">QA Engineers</a>
         </Link>
       </>
     );
