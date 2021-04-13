@@ -25,6 +25,10 @@ const Navbar = ({ role }) => {
         <Link href="/admin/qas">
           <a className="mr-5 hover:text-gray-900">QA Engineers</a>
         </Link>
+
+        <Link href="/admin/users">
+          <a className="mr-5 hover:text-gray-900">Users</a>
+        </Link>
       </>
     );
   };

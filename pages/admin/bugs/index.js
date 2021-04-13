@@ -131,7 +131,7 @@ const Bugs = () => {
 
   return (
     <PrivateRoute>
-      {userData[0]?.role == 1 ? (
+      {userData[0]?.role == 2 ? (
         <>
           <Head>
             <title>Bugs | Bug tracker</title>

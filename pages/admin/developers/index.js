@@ -79,7 +79,7 @@ const Developers = () => {
 
   return (
     <PrivateRoute>
-      {userData[0]?.role == 1 ? (
+      {userData[0]?.role == 2 ? (
         <>
           {" "}
           <Head>

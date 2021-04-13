@@ -1,12 +1,15 @@
 import Head from "next/head";
 import { useMemo } from "react";
 import useSWR from "swr";
-import { supabase } from "@lib/initSupabase";
 import fetcher from "@utils/fetcher";
-import { Flex, Heading, HStack, Tag } from "@chakra-ui/react";
+import { Flex, Heading, HStack, Tag, Spinner } from "@chakra-ui/react";
 import { TableSkeleton } from "@/components/molecules/index";
 import { ReactTable, UpdateUserModal } from "@/components/organisms/index";
 import { PrivateRoute } from "@/components/routing/PrivateRoute";
+import { Auth } from "@supabase/ui";
+import Lottie from "react-lottie";
+import LottieForbidden from "../../../public/forbidden.json";
+import { defaultOptions } from "@/constants/lottieOptions";
 
 const cellValueHandler = ({ cell, row }) => {
   let value;
@@ -60,6 +63,15 @@ const QAs = () => {
   const columns = useMemo(() => fields, []);
   const headers = fields.map((header) => header.Header);
 
+  const { session } = Auth.useUser();
+  const { data: userData, error: userError } = useSWR(
+    session ? ["/api/users/data", session.access_token] : null,
+    fetcher
+  );
+
+  if (userError) return <div>failed to load</div>;
+  if (!userData) return <Spinner />;
+
   const { data: QAs, error } = useSWR("/api/qas", fetcher);
 
   if (error) return <div>failed to load</div>;
@@ -67,18 +79,35 @@ const QAs = () => {
 
   return (
     <PrivateRoute>
-      <Head>
-        <title>QA Engineers | Bug tracker</title>
-        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-      </Head>
-      <Flex justify="flex-start" margin="5px 10px 20px 10px">
-        <Heading size="lg">QA Engineers</Heading>
-      </Flex>
-      <ReactTable
-        data={QAs}
-        columns={columns}
-        cellValueHandler={cellValueHandler}
-      />
+      {userData[0]?.role == 2 ? (
+        <>
+          {" "}
+          <Head>
+            <title>QA Engineers | Bug tracker</title>
+            <meta
+              name="viewport"
+              content="initial-scale=1.0, width=device-width"
+            />
+          </Head>
+          <Flex justify="flex-start" margin="5px 10px 20px 10px">
+            <Heading size="lg">QA Engineers</Heading>
+          </Flex>
+          <ReactTable
+            data={QAs}
+            columns={columns}
+            cellValueHandler={cellValueHandler}
+          />
+        </>
+      ) : (
+        <Lottie
+          options={{
+            ...defaultOptions,
+            animationData: LottieForbidden,
+          }}
+          height={"30%"}
+          width={"30%"}
+        />
+      )}
     </PrivateRoute>
   );
 };

@@ -2,26 +2,14 @@ import Head from "next/head";
 import { useMemo } from "react";
 import useSWR from "swr";
 import fetcher from "@utils/fetcher";
+import { Flex, Heading, HStack, Tag, Spinner } from "@chakra-ui/react";
+import { TableSkeleton } from "@/components/molecules/index";
+import { ReactTable, UpdateUserModal } from "@/components/organisms/index";
+import { PrivateRoute } from "@/components/routing/PrivateRoute";
 import { Auth } from "@supabase/ui";
 import Lottie from "react-lottie";
 import LottieForbidden from "../../../public/forbidden.json";
 import { defaultOptions } from "@/constants/lottieOptions";
-import {
-  Avatar,
-  Flex,
-  Heading,
-  Tooltip,
-  Wrap,
-  WrapItem,
-} from "@chakra-ui/react";
-import { TableSkeleton } from "@/components/molecules/index";
-import {
-  AssignDeveloperProjectModal,
-  CreateProjectModal,
-  ReactTable,
-  UpdateProjectModal,
-} from "@/components/organisms/index";
-import { PrivateRoute } from "@/components/routing/PrivateRoute";
 
 const cellValueHandler = ({ cell, row }) => {
   let value;
@@ -29,34 +17,48 @@ const cellValueHandler = ({ cell, row }) => {
     case "active":
       value = row.values.active ? "✅" : "❌";
       break;
-    case "name":
+    case "email":
       value = (
-        <UpdateProjectModal project={row.original} children={row.values.name} />
+        <UpdateUserModal user={row.original} children={row.values.email} />
       );
       break;
-    case "projectxdeveloper":
+    case "roles":
       value = (
-        <Wrap>
-          {row.values.projectxdeveloper.map((dev) => (
-            <Tooltip
-              label={dev?.users?.name}
-              fontSize="md"
-              key={dev?.users?.id}
-            >
-              <WrapItem key={dev?.users?.id}>
-                <Avatar size="xs" name={dev?.users?.name} />
-              </WrapItem>
-            </Tooltip>
+        <Tag
+          colorScheme={
+            row.values.roles?.id == 1
+              ? "red"
+              : row.values.roles?.id == 2
+              ? "cyan"
+              : row.values.roles?.id == 3
+              ? "green"
+              : "orange"
+          }
+        >
+          {row.values.roles?.name}
+        </Tag>
+      );
+      break;
+    case "programingLanguages":
+      value = (
+        <HStack spacing={4}>
+          {row.values.programingLanguages?.map((language) => (
+            <Tag colorScheme="purple" key={language}>
+              {language}
+            </Tag>
           ))}
-        </Wrap>
+        </HStack>
       );
       break;
-    case "assign":
+    case "technologies":
       value = (
-        <AssignDeveloperProjectModal
-          project={row.original}
-          children={"Assign developers"}
-        />
+        <HStack spacing={4}>
+          {row.values.technologies?.map((tech) => (
+            <Tag colorScheme="red" key={tech}>
+              {tech}
+            </Tag>
+          ))}
+        </HStack>
       );
       break;
     default:
@@ -67,15 +69,12 @@ const cellValueHandler = ({ cell, row }) => {
 };
 
 const fields = [
+  { Header: "Email", accessor: "email" },
   { Header: "Name", accessor: "name" },
-  { Header: "Developers", accessor: "projectxdeveloper" },
-  { Header: "Start date", accessor: "startDate" },
-  { Header: "End date", accessor: "endDate" },
-  { Header: "active", accessor: "active" },
-  { Header: "", accessor: "assign" },
+  { Header: "Role", accessor: "roles" },
 ];
 
-const Projects = () => {
+const Users = () => {
   const columns = useMemo(() => fields, []);
   const headers = fields.map((header) => header.Header);
 
@@ -88,30 +87,30 @@ const Projects = () => {
   if (userError) return <div>failed to load</div>;
   if (!userData) return <Spinner />;
 
-  const { data: projects, error } = useSWR("/api/projects", fetcher);
+  const { data: users, error } = useSWR("/api/users", fetcher);
 
   if (error) return <div>failed to load</div>;
-  if (!projects) return <TableSkeleton headers={headers} />;
+  if (!users) return <TableSkeleton headers={headers} />;
+
+  console.log(`users`, users);
 
   return (
     <PrivateRoute>
       {userData[0]?.role == 2 ? (
         <>
+          {" "}
           <Head>
-            <title>Projects | Bug tracker</title>
+            <title>Users | Bug tracker</title>
             <meta
               name="viewport"
               content="initial-scale=1.0, width=device-width"
             />
           </Head>
           <Flex justify="flex-start" margin="5px 10px 20px 10px">
-            <Heading size="lg">Projects</Heading>
-          </Flex>
-          <Flex justify="flex-end" margin="15px 10px 30px 10px">
-            <CreateProjectModal />
+            <Heading size="lg">Users</Heading>
           </Flex>
           <ReactTable
-            data={projects}
+            data={users}
             columns={columns}
             cellValueHandler={cellValueHandler}
           />
@@ -130,4 +129,4 @@ const Projects = () => {
   );
 };
 
-export default Projects;
+export default Users;
