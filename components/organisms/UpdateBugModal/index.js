@@ -41,6 +41,7 @@ export const UpdateBugModal = ({ bug, children }) => {
     try {
       let newBug = {
         ...data,
+        bugstate: dev?.value === undefined ? 1 : 2,
         developer: Object.keys(dev).length ? dev?.value : null,
         project: Object.keys(project).length ? project?.value : null,
       };
@@ -128,23 +129,7 @@ export const UpdateBugModal = ({ bug, children }) => {
                 </Select>
               </FormControl>
 
-              <FormControl id="bugstate" isRequired>
-                <FormLabel>Bug state</FormLabel>
-                <Select
-                  defaultValue={bug?.bugstate}
-                  id="bugstate"
-                  name="bugstate"
-                  ref={register}
-                >
-                  {Object.entries(bugStates).map((item) => (
-                    <option value={item[1]["value"]} key={item[1]["value"]}>
-                      {item[1]["label"]}
-                    </option>
-                  ))}
-                </Select>
-              </FormControl>
-
-              <FormControl id="project" mt={3}>
+              <FormControl id="project" mt={3} isRequired>
                 <FormLabel>Project</FormLabel>
                 <AsyncSelect
                   api="/api/projects"

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { mutate } from "swr";
+import { UpdateBug } from "@lib/db";
 import {
   Button,
   FormControl,
@@ -20,35 +21,36 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { bugStates, priorities } from "@/constants/states";
-import { CreateBug } from "@lib/db";
 import { AS as AsyncSelect } from "@/components/atoms/index";
-import { supabase } from "@lib/initSupabase";
 
-const CreateBugModal = () => {
-  const [dev, setDeveloper] = useState({});
-  const [project, setProject] = useState({});
+export const QAUpdateBugModal = ({ bug, children }) => {
+  const [dev, setDeveloper] = useState({
+    label: bug?.users?.name,
+    value: bug?.users?.id,
+  });
+  const [project, setProject] = useState({
+    label: bug?.project?.name,
+    value: bug?.project?.id,
+  });
+
   const toast = useToast();
-  const user = supabase.auth.user();
-
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { handleSubmit, register } = useForm();
 
-  const onCreateBug = async (data) => {
+  const onUpdateBug = async (data) => {
     try {
       let newBug = {
         ...data,
-        qa: user?.id,
-        bugstate: Object.keys(dev).length ? 2 : 1,
-        developer: Object.keys(dev).length ? dev?.value : null,
         project: Object.keys(project).length ? project?.value : null,
       };
 
-      const { data: response, error } = await CreateBug(newBug);
+      const { data: response, error } = await UpdateBug(bug?.id, newBug);
+
       toast({
         title: error === null ? "Éxito!" : "Error",
         description:
           error === null
-            ? "Haz creado una alerta de bug"
+            ? "Haz actualizado correctamente los datos."
             : "Ocurrió un error, intente de nuevo.",
         status: error === null ? "success" : "error",
         duration: 2500,
@@ -70,13 +72,16 @@ const CreateBugModal = () => {
       onClose();
     }
   };
+
   return (
     <>
-      <Button onClick={onOpen}>Add Bug</Button>
+      <Button id="update-bug-modal-button" onClick={onOpen} variant="link">
+        {children}
+      </Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent as="form" onSubmit={handleSubmit(onCreateBug)}>
-          <ModalHeader>Add new bug alert</ModalHeader>
+        <ModalContent as="form" onSubmit={handleSubmit(onUpdateBug)}>
+          <ModalHeader>Updating bug alert</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <Stack spacing="6">
@@ -87,6 +92,8 @@ const CreateBugModal = () => {
                   ref={register}
                   id="name"
                   name="name"
+                  key={bug?.name}
+                  defaultValue={bug?.name}
                 />
               </FormControl>
 
@@ -99,12 +106,19 @@ const CreateBugModal = () => {
                   resize={"horizontal"}
                   size={"md"}
                   ref={register}
+                  key={bug?.id}
+                  defaultValue={bug?.description}
                 />
               </FormControl>
 
               <FormControl id="priority" isRequired>
                 <FormLabel>Priority</FormLabel>
-                <Select id="priority" name="priority" ref={register}>
+                <Select
+                  defaultValue={bug?.priority}
+                  id="priority"
+                  name="priority"
+                  ref={register}
+                >
                   {Object.entries(priorities).map((item) => (
                     <option value={item[1]["value"]} key={item[1]["value"]}>
                       {item[1]["label"]}
@@ -120,37 +134,22 @@ const CreateBugModal = () => {
                   valueField="id"
                   labelField="name"
                   isMulti={false}
+                  defaultValue={project}
                   setFunction={setProject}
                 />
               </FormControl>
-
-              {/* <FormControl id="developers" mt={3}>
-                <FormLabel>Developer</FormLabel>
-                <AsyncSelect
-                  api="/api/developers"
-                  valueField="id"
-                  labelField="name"
-                  isMulti={false}
-                  setFunction={setDeveloper}
-                />
-              </FormControl> */}
             </Stack>
           </ModalBody>
           <ModalFooter>
-            <Button
-              colorScheme="blue"
-              mr={3}
-              isDisabled={!Object.keys(project).length}
-              type="submit"
-            >
-              Save
-            </Button>
-            <Button onClick={onClose}>Cancel</Button>
+            <Stack spacing={4} direction="row">
+              <Button onClick={onClose}>Cancel</Button>
+              <Button colorScheme="blue" mr={3} type="submit">
+                Save
+              </Button>
+            </Stack>
           </ModalFooter>
         </ModalContent>
       </Modal>
     </>
   );
 };
-
-export { CreateBugModal };

@@ -4,6 +4,7 @@ import useSWR from "swr";
 import { Auth, Card, Typography, Space, Button } from "@supabase/ui";
 import { supabase } from "@lib/initSupabase";
 import fetcher from "@utils/fetcher";
+import { formatDateTime } from "@utils/dateTime";
 
 const Login = () => {
   const { user, session } = Auth.useUser();
@@ -12,6 +13,7 @@ const Login = () => {
     fetcher
   );
   const [authView, setAuthView] = useState("sign_in");
+  console.log(`user`, user);
 
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
@@ -84,7 +86,10 @@ const Login = () => {
               </a>
             </Link>
             <Typography.Text>{`Hey there!  :)`}</Typography.Text>
-            <Typography.Text strong>Email: {user.email}</Typography.Text>
+            <Typography.Text strong>{user.email}</Typography.Text>
+            <Typography.Text>
+              Last Sign In At: {formatDateTime(user?.last_sign_in_at)}
+            </Typography.Text>
             <Link href="/">
               <a>
                 <Button style={{ color: "white" }}>Go home</Button>

@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import useSWR from "swr";
 import fetcher from "@utils/fetcher";
 import { Flex, Heading, HStack, Tag, Spinner } from "@chakra-ui/react";
@@ -77,26 +77,28 @@ const fields = [
 const Users = () => {
   const columns = useMemo(() => fields, []);
   const headers = fields.map((header) => header.Header);
+  const [userData, setUserData] = useState(null);
 
   const { session } = Auth.useUser();
-  const { data: userData, error: userError } = useSWR(
+  const { data, error: userError } = useSWR(
     session ? ["/api/users/data", session.access_token] : null,
     fetcher
   );
 
-  if (userError) return <div>failed to load</div>;
-  if (!userData) return <Spinner />;
+  useEffect(() => {
+    if (userError) return <div>failed to load</div>;
+    if (!data) return <Spinner />;
+    if (data) setUserData(data[0]);
+  }, [data]);
 
   const { data: users, error } = useSWR("/api/users", fetcher);
 
   if (error) return <div>failed to load</div>;
   if (!users) return <TableSkeleton headers={headers} />;
 
-  console.log(`users`, users);
-
   return (
     <PrivateRoute>
-      {userData[0]?.role == 2 ? (
+      {userData?.role == 2 ? (
         <>
           {" "}
           <Head>

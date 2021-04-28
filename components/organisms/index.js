@@ -5,3 +5,5 @@ export { ReactTable } from "./ReactTable";
 export { UpdateUserModal } from "./UpdateUserModal";
 export { UpdateBugModal } from "./UpdateBugModal";
 export { UpdateProjectModal } from "./UpdateProjectModal";
+export { BugFinished } from "./BugFinished";
+export { QAUpdateBugModal } from "./QAUpdateBugModal";

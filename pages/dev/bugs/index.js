@@ -1,8 +1,9 @@
 import Head from "next/head";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import useSWR from "swr";
+import { supabase } from "@lib/initSupabase";
 import fetcher from "@utils/fetcher";
-import { Auth } from "@supabase/ui";
+import { Auth, Button } from "@supabase/ui";
 import Lottie from "react-lottie";
 import LottieForbidden from "../../../public/forbidden.json";
 import { defaultOptions } from "@/constants/lottieOptions";
@@ -11,37 +12,34 @@ import {
   Heading,
   Icon,
   IconButton,
+  Spinner,
   Tag,
   Tooltip,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
+  Stack,
 } from "@chakra-ui/react";
 import { AiOutlineCheck } from "react-icons/ai";
 import { TableSkeleton } from "@/components/molecules/index";
-import { ReactTable } from "@/components/organisms/index";
+import { ReactTable, BugFinished } from "@/components/organisms/index";
 import { bugStates, priorities } from "@/constants/states";
 import { PrivateRoute } from "@/components/routing/PrivateRoute";
-import { supabase } from "@lib/initSupabase";
 
 const cellValueHandler = ({ cell, row }) => {
   let value;
   switch (cell.column.id) {
-    case "action":
-      value = (
-        <Tooltip
-          label="Mark as done"
-          key={Math.random().toString(36).substring(7)}
-        >
-          <IconButton
-            aria-label="bug done"
-            icon={<AiOutlineCheck />}
-            key={Math.random().toString(36).substring(7)}
-          />
-        </Tooltip>
-      );
+    case "id":
+      value = <BugFinished bug={row.original} children={`Mark as done`} />;
       break;
     case "active":
       value = row.values.active ? "✅" : "❌";
       break;
-
     case "bugstate":
       value = (
         <Tag colorScheme={bugStates[row.values.bugstate]["color"]}>
@@ -83,22 +81,27 @@ const fields = [
   { Header: "Priority", accessor: "priority" },
   { Header: "Start date", accessor: "startDate" },
   { Header: "End date", accessor: "endDate" },
+  { Header: "Action", accessor: "id" },
 ];
 
 const Bugs = () => {
   const user = supabase.auth.user();
   const [project, setProject] = useState({});
+  const [userData, setUserData] = useState(null);
   const columns = useMemo(() => fields, []);
   const headers = fields.map((header) => header.Header);
 
   const { session } = Auth.useUser();
-  const { data: userData, error: userError } = useSWR(
+  const { data, error: userError } = useSWR(
     session ? ["/api/users/data", session.access_token] : null,
     fetcher
   );
 
-  if (userError) return <div>failed to load</div>;
-  if (!userData) return <Spinner />;
+  useEffect(() => {
+    if (userError) return <div>failed to load</div>;
+    if (!data) return <Spinner />;
+    if (data) setUserData(data[0]);
+  }, [data]);
 
   const { data: bugs, error } = useSWR(
     user ? ["/api/developers/bugs", user?.id] : null,
@@ -110,7 +113,7 @@ const Bugs = () => {
 
   return (
     <PrivateRoute>
-      {userData[0]?.role == 3 ? (
+      {userData?.role == 3 ? (
         <>
           <Head>
             <title>Bugs | Bug tracker</title>

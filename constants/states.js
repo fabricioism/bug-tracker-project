@@ -8,8 +8,8 @@ export const priorities = {
 
 export const bugStates = {
   1: { label: "New", value: 1, color: "green" },
-  2: { label: "Assigned", value: 2, color: "cyan" },
-  3: { label: "Fixing", value: 3, color: "purple" },
-  4: { label: "Testing", value: 4, color: "yellow" },
+  2: { label: "Assigned", value: 2, color: "yellow" },
+  // 3: { label: "Fixing", value: 3, color: "purple" },
+  // 4: { label: "Testing", value: 4, color: "yellow" },
   5: { label: "Done", value: 5, color: "blue" },
 };

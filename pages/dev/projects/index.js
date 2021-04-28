@@ -1,12 +1,12 @@
 import Head from "next/head";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import useSWR from "swr";
 import fetcher from "@utils/fetcher";
 import { Auth } from "@supabase/ui";
 import Lottie from "react-lottie";
 import LottieForbidden from "../../../public/forbidden.json";
 import { defaultOptions } from "@/constants/lottieOptions";
-import { Flex, Heading } from "@chakra-ui/react";
+import { Flex, Heading, Spinner } from "@chakra-ui/react";
 import { TableSkeleton } from "@/components/molecules/index";
 import { ReactTable } from "@/components/organisms/index";
 import { PrivateRoute } from "@/components/routing/PrivateRoute";
@@ -34,17 +34,21 @@ const fields = [
 
 const Projects = () => {
   const user = supabase.auth.user();
+  const [userData, setUserData] = useState(null);
   const columns = useMemo(() => fields, []);
   const headers = fields.map((header) => header.Header);
 
   const { session } = Auth.useUser();
-  const { data: userData, error: userError } = useSWR(
+  const { data, error: userError } = useSWR(
     session ? ["/api/users/data", session.access_token] : null,
     fetcher
   );
 
-  if (userError) return <div>failed to load</div>;
-  if (!userData) return <Spinner />;
+  useEffect(() => {
+    if (userError) return <div>failed to load</div>;
+    if (!data) return <Spinner />;
+    if (data) setUserData(data[0]);
+  }, [data]);
 
   const { data: projects, error } = useSWR(
     user ? ["/api/developers/projects", user?.id] : null,
@@ -56,7 +60,7 @@ const Projects = () => {
 
   return (
     <PrivateRoute>
-      {userData[0]?.role == 3 ? (
+      {userData?.role == 3 ? (
         <>
           <Head>
             <title>Projects | Bug tracker</title>

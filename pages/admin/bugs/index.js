@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import useSWR from "swr";
 import fetcher from "@utils/fetcher";
 import { Auth } from "@supabase/ui";
@@ -13,6 +13,8 @@ import {
   HStack,
   Icon,
   IconButton,
+  Select,
+  Spinner,
   Tag,
   Tooltip,
   Wrap,
@@ -78,19 +80,19 @@ const cellValueHandler = ({ cell, row }) => {
       value = <p>{row.values.project.name}</p>;
       break;
     case "users":
-      value = (
+      value = row.values?.users ? (
         <Wrap>
           <Tooltip
-            label={row.values.users.name}
+            label={row.values.users?.name}
             fontSize="md"
             key={Math.random().toString(36).substring(7)}
           >
             <WrapItem key={Math.random().toString(36).substring(7)}>
-              <Avatar size="xs" name={row.values.users.email} />
+              <Avatar size="xs" name={row.values.users?.email} />
             </WrapItem>
           </Tooltip>
         </Wrap>
-      );
+      ) : null;
       break;
     default:
       value = cell.render("Cell");
@@ -112,17 +114,21 @@ const fields = [
 
 const Bugs = () => {
   const [project, setProject] = useState({});
+  const [userData, setUserData] = useState(null);
   const columns = useMemo(() => fields, []);
   const headers = fields.map((header) => header.Header);
 
   const { session } = Auth.useUser();
-  const { data: userData, error: userError } = useSWR(
+  const { data, error: userError } = useSWR(
     session ? ["/api/users/data", session.access_token] : null,
     fetcher
   );
 
-  if (userError) return <div>failed to load</div>;
-  if (!userData) return <Spinner />;
+  useEffect(() => {
+    if (userError) return <div>failed to load</div>;
+    if (!data) return <Spinner />;
+    if (data) setUserData(data[0]);
+  }, [data]);
 
   const { data: bugs, error } = useSWR("/api/bugs", fetcher);
 
@@ -131,7 +137,7 @@ const Bugs = () => {
 
   return (
     <PrivateRoute>
-      {userData[0]?.role == 2 ? (
+      {userData?.role == 2 ? (
         <>
           <Head>
             <title>Bugs | Bug tracker</title>
@@ -144,7 +150,7 @@ const Bugs = () => {
             <Heading size="lg">Bugs</Heading>
           </Flex>
           <Flex justify="flex-end" margin="15px 10px 30px 10px">
-            <CreateBugModal />
+            {/* <CreateBugModal /> */}
           </Flex>
           <ReactTable
             data={bugs}
